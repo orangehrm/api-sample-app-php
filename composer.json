@@ -10,7 +10,7 @@
     }
   ],
   "require": {
-    "orangehrm/api-client-php": "v1.0"
+    "orangehrm/api-client-php": "v1.1"
   },
   "license": [
     "GPL-2.0"
