@@ -17,45 +17,30 @@
  * Boston, MA  02110-1301, USA
  */
 
-require_once 'vendor/autoload.php';
+require_once 'config.php';
+require_once 'model/db.php';
+require_once 'model/util.php';
 
 use Orangehrm\API\Client;
 use Orangehrm\API\HTTPRequest;
 
 
-$client = new Client('http://localhost/', '123', 'hrm');
-
-
-$yesterday = date('Y-m-d', strtotime("-1 days"));
-
-$tomorrow = date('Y-m-d', strtotime("+1 days"));
-
-$paramString = 'employee/event?fromDate=' . $yesterday . '&toDate=' . $tomorrow;
-
-//$request = new HTTPRequest('employee/event?fromDate=2017-04-10&toDate=2017-04-13');
-
-
-$eventData = null;
 
 try {
 
-    $db = new DataBase();
-
-    $request = new HTTPRequest($paramString);
-
+    //Load Event Data via API
+    $client = new Client($config->host, $config->clientId, $config->clientSecret);
+    $request = new HTTPRequest(getEventEndPoint());
     $result = $client->get($request)->getResult();
 
-    $insert = new InsertData();
+    //Save data in local DB
+    saveEventData($result);
 
-    $insert->insertTable($db, $result);
-
-
-    $data = new RetrieveData();
-    $eventData = $data->getData($db);
-
+    //Load the event Data
+    $eventData = getEventData();
 
 } catch (Exception $e) {
-    printf($e->getMessage());
+    logError($e->getMessage());
 }
 
 ?>
