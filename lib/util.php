@@ -17,6 +17,9 @@
  * Boston, MA  02110-1301, USA
  */
 
+use Orangehrm\API\Client;
+use Orangehrm\API\HTTPRequest;
+
 
 function getEventEndPoint(){
 
@@ -29,16 +32,48 @@ function getEventEndPoint(){
 
 function saveEventData($data) {
     $db = new DataBase();
-    $insert = new InsertData();
-
-    $insert->insertTable($db, $data);
+    $insert = $db->insertData($data);
 }
 
-function getEventData() {
-    $db = new DataBase();
-    $data = new RetrieveData();
-    return $data->getData($db);
+
+/**
+ * Get additional Event details
+ */
+function getEventData($type,$employeeId,$client) {
+
+    $supervisorUrl = "employee/" . $employeeId . "/supervisor";
+
+    $dependentUrl = "employee/" . $employeeId . "/dependent";
+
+    $contactDetailUrl = "employee/" . $employeeId . "/contact-detail";
+
+    $employeeDetailUrl = "employee/" . $employeeId;
+
+    $jobDetailUrl = "employee/" . $employeeId . "/job-detail";
+
+    $request = null;
+
+    if ('supervisor' == $type) {
+        $request = new HTTPRequest($this->supervisorUrl);
+    }
+    else if ('employee' == $type) {
+        $request = new HTTPRequest($this->employeeDetailUrl);
+    }
+    else if ('contact' == $type) {
+
+        $request = new HTTPRequest($this->contactDetailUrl);
+
+    }else if ('jobDetail' == $type) {
+
+        $request = new HTTPRequest($this->jobDetailUrl);
+
+    }
+
+    $result = $client->get($request)->getResult();
+
+    echo json_encode($result);
 }
+
 
 
 function logError() {
