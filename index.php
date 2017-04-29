@@ -18,13 +18,11 @@
  */
 
 require_once 'config.php';
-require_once 'model/db.php';
-require_once 'model/util.php';
+require_once 'lib/DataBase.php';
+require_once 'lib/util.php';
 
 use Orangehrm\API\Client;
 use Orangehrm\API\HTTPRequest;
-
-
 
 try {
 
@@ -33,11 +31,17 @@ try {
     $request = new HTTPRequest(getEventEndPoint());
     $result = $client->get($request)->getResult();
 
+    $db = new DataBase();
+
     //Save data in local DB
     saveEventData($result);
 
     //Load the event Data
-    $eventData = getEventData();
+
+    $type = $_POST["type"];
+    $employeeId = $_POST["id"];
+
+    getEventData($type,$employeeId,$client);
 
 } catch (Exception $e) {
     logError($e->getMessage());
