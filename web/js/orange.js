@@ -61,7 +61,9 @@ function getEmployeeEventData() {
 // }
 
 function setEvents(data) {
+
     data.reverse();
+
     var sb = '';
     for (var i in data) {
 
@@ -158,7 +160,7 @@ function goBack() {
 
 function getEmployeeDetails(empId, type) {
 
-     $.ajax({
+    $.ajax({
         url: "data.php",
         method: "POST",
         data: {id: empId, type: type , event:'getEventData'},
@@ -247,16 +249,13 @@ function getEventAdditionalDetails(eventData, type) {
  */
 function updateData(data) {
 
-
     var today = data.onLeave.data;
     var total = data.leaveRequests.data;
-
 
     $("#leaveToday").text(today.length);
     $("#leaveRequests").text(total.length);
     $("#empEvents").text(eventItems.length);
     $("#newlyJoined").text(data.newMembers.data.length);
-
 
 }
 /**
@@ -331,7 +330,6 @@ function showTodayLeave() {
 
     var sb = '';
     for (var i in onLeavetoday.data) {
-
 
         $leaveString = onLeavetoday.data[i].employeeName + " is on " + onLeavetoday.data[i].type + " Leave from " + onLeavetoday.data[i].fromDate + " to " + onLeavetoday.data[i].toDate;
 
