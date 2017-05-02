@@ -28,7 +28,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title> Orange | Lite </title>
+    <title> Notifications </title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.6 -->
@@ -137,7 +137,7 @@ desired effect
                             <!-- The user image in the navbar-->
                             <img src="orangeApp/orange/dist/img/orange.png" class="user-image" alt="User Image">
                             <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                            <span class="hidden-xs">Orange Lite</span>
+                            <span class="hidden-xs">Notifications</span>
                         </a>
                         <ul class="dropdown-menu">
                             <!-- The user image in the menu -->
@@ -145,7 +145,7 @@ desired effect
                                 <img src="orangeApp/orange/dist/img/orange.png" class="img-circle" alt="User Image">
 
                                 <p>
-                                    Orange-Lite - Notification Viewer
+                                    Notification Viewer
                                     <small>Based on Orange Open Source 4.0 API platform</small>
                                 </p>
                             </li>
@@ -195,7 +195,7 @@ desired effect
                     <img src="orangeApp/orange/dist/img/orange.png" class="img-circle" alt="User Image">
                 </div>
                 <div class="pull-left info">
-                    <p>Orange Lite</p>
+                    <p>Notifications</p>
                     <!-- Status -->
                     <a href="#"><i class="fa fa-circle text-success"></i> Active</a>
                 </div>
@@ -241,7 +241,7 @@ desired effect
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                Orange Lite
+                Notifications
                 <small>Dashboard</small>
             </h1>
             <ol class="breadcrumb">
@@ -388,7 +388,7 @@ desired effect
             Notification Dashboard
         </div>
         <!-- Default to the left -->
-        <strong>Orange Lite &copy; 2017 <a href="https://www.orangehrm.com/">OrangeHrm</a></strong>.
+        <strong>Notifications dashboard &copy; 2017 by <a href="https://www.orangehrm.com/">OrangeHrm</a></strong>.
     </footer>
 
     <!-- Control Sidebar -->
