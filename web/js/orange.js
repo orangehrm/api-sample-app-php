@@ -23,6 +23,7 @@ function getEmployeeEventData() {
     $.ajax({
         url: "data.php",
         method: "POST",
+        data: { event:'createEvents'},
         dataType: "json",
         success: function (data) {
             console.log('tt');
@@ -43,21 +44,21 @@ function getEmployeeEventData() {
 /**
  * Ajax call to Update DB
  */
-function updateLocalDB() {
-
-    $.ajax({
-        url: "index.php",
-        method: "POST",
-        dataType: "json",
-        success: function (data) {
-
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            $('#info').html(textStatus + ", " + errorThrown);
-        }
-    });
-
-}
+// function updateLocalDB() {
+//
+//     $.ajax({
+//         url: "index.php",
+//         method: "POST",
+//         dataType: "json",
+//         success: function (data) {
+//
+//         },
+//         error: function (jqXHR, textStatus, errorThrown) {
+//             $('#info').html(textStatus + ", " + errorThrown);
+//         }
+//     });
+//
+// }
 
 function setEvents(data) {
     data.reverse();
@@ -157,10 +158,11 @@ function goBack() {
 
 function getEmployeeDetails(empId, type) {
 
+    console.log($(location).attr('pathname'));
     $.ajax({
-        url: "eventDetails.php",
+        url: "data.php",
         method: "POST",
-        data: {id: empId, type: type},
+        data: {id: empId, type: type , event:'getEventData'},
         dataType: "json",
         success: function (data) {
             getEventAdditionalDetails(data, type);
