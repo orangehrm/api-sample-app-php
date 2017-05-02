@@ -17,29 +17,16 @@
  * Boston, MA  02110-1301, USA
  */
 
+
 use Orangehrm\API\Client;
 use Orangehrm\API\HTTPRequest;
-
-
-function getEventEndPoint(){
-
-    $yesterday = date('Y-m-d', strtotime("-1 days"));
-
-    $tomorrow = date('Y-m-d', strtotime("+1 days"));
-
-    return 'employee/event?fromDate=' . $yesterday . '&toDate=' . $tomorrow;
-}
-
-function saveEventData($data) {
-    $db = new DataBase();
-    $insert = $db->insertData($data);
-}
-
 
 /**
  * Get additional Event details
  */
 function getEventData($type,$employeeId,$client) {
+
+
 
     $supervisorUrl = "employee/" . $employeeId . "/supervisor";
 
@@ -51,29 +38,103 @@ function getEventData($type,$employeeId,$client) {
 
     $jobDetailUrl = "employee/" . $employeeId . "/job-detail";
 
-    $request = null;
+    try {  $request = null;
 
-    if ('supervisor' == $type) {
-        $request = new HTTPRequest($this->supervisorUrl);
+        if ('supervisor' == $type) {
+            $request = new HTTPRequest($supervisorUrl);
+        }
+        else if ('employee' == $type) {
+            $request = new HTTPRequest($employeeDetailUrl);
+        }
+        else if ('contact' == $type) {
+
+            $request = new HTTPRequest($contactDetailUrl);
+
+        }else if ('jobDetail' == $type) {
+
+            $request = new HTTPRequest($jobDetailUrl);
+
+        }
+
+        $result = $client->get($request)->getResult();
+
+        echo json_encode($result);}catch (Exception $e){
+
     }
-    else if ('employee' == $type) {
-        $request = new HTTPRequest($this->employeeDetailUrl);
-    }
-    else if ('contact' == $type) {
 
-        $request = new HTTPRequest($this->contactDetailUrl);
 
-    }else if ('jobDetail' == $type) {
+}
 
-        $request = new HTTPRequest($this->jobDetailUrl);
+/**
+ * Create event data
+ * @param $client
+ */
+function createEvents($client){
 
-    }
+   // $client = new Client($config->host, $config->clientId, $config->clientSecret);
+
+    $date = date("Y-m-d");
+
+    $latDay = date('Y-m-d', strtotime("30 days"));
+
+    $tomorrow = date('Y-m-d', strtotime("+1 days"));
+
+    $paramString = 'employee/event?fromDate=' . $latDay . '&toDate=' . $tomorrow;
+
+    $str2 = 'employee/event?fromDate=2017-04-01&toDate=2017-04-30&type=employee&event=SAVE';
+
+    $request = new HTTPRequest($str2);
 
     $result = $client->get($request)->getResult();
 
-    echo json_encode($result);
-}
 
+    $leaveData = null;
+    $eventData = null;
+
+    try {
+
+        $leaveRequestsUrl = 'leave/search?reject=false&cancelled=false&pendingApproval=true&scheduled=false&taken=false&pastEmployee&page=0&limit=10';
+
+        $leaveRequest = new HTTPRequest($leaveRequestsUrl);
+
+        $leaveResults = $client->get($leaveRequest)->getResult();
+
+        $leavesUrl = 'leave/search?reject=false&cancelled=false&pendingApproval=false&scheduled=true&taken=true&pastEmployee&page=0&limit=10&fromDate=' . $date . '&toDate=' . $date;
+
+        $leavesToday = new HTTPRequest($leavesUrl);
+
+        $leavesInToday = $client->get($leavesToday)->getResult();
+
+        $employeeEventUrl = 'employee/event';
+        $EventRequest = new HTTPRequest($employeeEventUrl);
+        $data = $client->get($EventRequest)->getResult();
+
+
+        $rowId = 0;
+        $dateTime = date("Y-m-d h:i:sa");
+
+        foreach ($data['data'] as $employeeEvent) {
+
+            $eventDataItem['id'] = $rowId;
+            $eventDataItem['time'] = $dateTime;
+            $eventDataItem['data'] = $employeeEvent;
+            $eventData[] = $eventDataItem;
+            $rowId++;
+
+        }
+
+        $events['data'] = $eventData;
+        $events['leaveRequests'] = $leaveResults;
+        $events['onLeave'] = $leavesInToday;
+        $events['newMembers'] = $result;
+
+
+        echo json_encode($events);
+
+    } catch (Exception $e) {
+        printf($e->getMessage());
+    }
+}
 
 
 function logError() {
