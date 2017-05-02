@@ -36,8 +36,8 @@ $event =$_POST["event"];
 $type = $_POST["type"];
 $employeeId = $_POST["id"];
 
-
-
+// call the the util method
+// based on the event type
 if($event == 'getEventData'){
     getEventData($type,$employeeId,$client);
 }else if ($event == 'createEvents'){
