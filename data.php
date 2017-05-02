@@ -18,6 +18,7 @@
  */
 
 
+
 require_once 'config.php';
 
 require_once 'lib/util.php';
@@ -28,24 +29,19 @@ use Orangehrm\API\HTTPRequest;
 
 
 $client = new Client($config->host, $config->clientId, $config->clientSecret);
-$request = new HTTPRequest(getEventEndPoint());
-$result = $client->get($request)->getResult();
+
+//Load the event Data
+
+$event =$_POST["event"];
+$type = $_POST["type"];
+$employeeId = $_POST["id"];
 
 
-$event = $_POST["event"];
 
-/*
- * check the the ajax call for
- * event data or create events
- */
-if ($event == 'getEventData') {
-    $type = $_POST["type"];
-    $employeeId = $_POST["id"];
-    getEventData($type, $employeeId, $client);
-} else {
-    if ($event == 'createEvents') {
-        createEvents($client);
-    }
+if($event == 'getEventData'){
+    getEventData($type,$employeeId,$client);
+}else if ($event == 'createEvents'){
+    createEvents($client);
 }
 
 ?>
