@@ -38,6 +38,10 @@ function getEventData($type,$employeeId,$client) {
 
     $jobDetailUrl = "employee/" . $employeeId . "/job-detail";
 
+    /**
+     * checking for event type to get the additional information
+     * related to the event
+     */
     try {  $request = null;
 
         if ('supervisor' == $type) {
@@ -71,7 +75,6 @@ function getEventData($type,$employeeId,$client) {
  */
 function createEvents($client){
 
-   // $client = new Client($config->host, $config->clientId, $config->clientSecret);
 
     $date = date("Y-m-d");
 
