@@ -16,37 +16,6 @@
  * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA  02110-1301, USA
  */
-
-require_once 'config.php';
-require_once 'lib/DataBase.php';
-require_once 'lib/util.php';
-
-use Orangehrm\API\Client;
-use Orangehrm\API\HTTPRequest;
-
-try {
-
-    //Load Event Data via API
-    $client = new Client($config->host, $config->clientId, $config->clientSecret);
-    $request = new HTTPRequest(getEventEndPoint());
-    $result = $client->get($request)->getResult();
-
-    $db = new DataBase();
-
-    //Save data in local DB
-    saveEventData($result);
-
-    //Load the event Data
-
-    $type = $_POST["type"];
-    $employeeId = $_POST["id"];
-
-    getEventData($type,$employeeId,$client);
-
-} catch (Exception $e) {
-    logError($e->getMessage());
-}
-
 ?>
 
 
@@ -83,7 +52,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <script src="orangeApp/orange/plugins/jQuery/jquery-2.2.3.min.js"></script>
-    <script src="orange.js"></script>
+    <script src="web/js/orange.js"></script>
 
 
     <style>
