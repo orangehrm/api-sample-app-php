@@ -26,7 +26,7 @@ function getEmployeeEventData() {
         data: { event:'createEvents'},
         dataType: "json",
         success: function (data) {
-            console.log('tt');
+
             eventItems = data.data;
             setEvents(data.data);
             updateData(data);
@@ -158,8 +158,7 @@ function goBack() {
 
 function getEmployeeDetails(empId, type) {
 
-    console.log($(location).attr('pathname'));
-    $.ajax({
+     $.ajax({
         url: "data.php",
         method: "POST",
         data: {id: empId, type: type , event:'getEventData'},
@@ -207,7 +206,7 @@ function getEventAdditionalDetails(eventData, type) {
             "</ul>";
 
 
-    } else if ('supervisor' === type) {// console.log(data);
+    } else if ('supervisor' === type) {
 
         str = "<ul>" +
             "  <li>" + "Supervisor Name : " + eventData.data[0].name + "</li>" +
@@ -265,8 +264,6 @@ function updateData(data) {
  */
 function showNewUsers() {
 
-
-    console.log(newUsers);
     var sb = '';
     for (var i in newUsers) {
 
@@ -304,8 +301,6 @@ function showLeaveRequests() {
 
 
         $leaveString = leaveRequests.data[i].employeeName + " is applied for " + leaveRequests.data[i].type + " Leave from " + leaveRequests.data[i].fromDate + " to " + leaveRequests.data[i].toDate;
-        console.log(leaveRequests.data[i]);
-
 
         var id = leaveRequests.data[i].employeeId;
 
@@ -339,8 +334,6 @@ function showTodayLeave() {
 
 
         $leaveString = onLeavetoday.data[i].employeeName + " is on " + onLeavetoday.data[i].type + " Leave from " + onLeavetoday.data[i].fromDate + " to " + onLeavetoday.data[i].toDate;
-        console.log(onLeavetoday.data[i]);
-
 
         var id = onLeavetoday.data[i].employeeId;
 
