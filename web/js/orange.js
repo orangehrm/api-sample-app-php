@@ -42,23 +42,13 @@ function getEmployeeEventData() {
 
 }
 /**
- * Ajax call to Update DB
+ * Updating events
  */
-// function updateLocalDB() {
-//
-//     $.ajax({
-//         url: "index.php",
-//         method: "POST",
-//         dataType: "json",
-//         success: function (data) {
-//
-//         },
-//         error: function (jqXHR, textStatus, errorThrown) {
-//             $('#info').html(textStatus + ", " + errorThrown);
-//         }
-//     });
-//
-// }
+function updateLocalDB() {
+
+    getEmployeeEventData();
+
+}
 
 function setEvents(data) {
 
