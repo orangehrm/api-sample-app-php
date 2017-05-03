@@ -1,4 +1,3 @@
-
 /**
  * OrangeHRM is a comprehensive Human Resource Management (HRM) System that captures
  * all the essential functionalities required for any enterprise.
@@ -19,18 +18,17 @@
 
 
 eventItems = null;
-additionalEventDetails = null
+additionalEventDetails = null;
 onLeavetoday = null;
 leaveRequests = null;
 newUsers = null;
 
 $(document).ready(
     function () {
-
         getEmployeeEventData();
         setInterval(function () {
-            updateLocalDB();
-            getEmployeeEventData();
+            refreshEvents();
+
         }, 60000);
 
     });
@@ -43,16 +41,17 @@ function getEmployeeEventData() {
     $.ajax({
         url: "data.php",
         method: "POST",
-        data: { event:'createEvents'},
+        data: {event: 'createEvents'},
         dataType: "json",
         success: function (data) {
 
             eventItems = data.data;
-            setEvents(data.data);
+            setNotifications(data.data);
             updateData(data);
             onLeavetoday = data.onLeave;
             leaveRequests = data.leaveRequests;
             newUsers = data.newMembers.data;
+
 
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -64,65 +63,55 @@ function getEmployeeEventData() {
 /**
  * Updating events
  */
-function updateLocalDB() {
+function refreshEvents() {
 
     getEmployeeEventData();
 
 }
-
-function setEvents(data) {
+/**
+ * Initiating employee notifications
+ * @param data
+ */
+function setNotifications(data) {
 
     data.reverse();
 
-    var sb = '';
-    for (var i in data) {
+     var eventData = createNotificationItems(data);
 
-        var id = data[i].id;
+    console.log(eventData);
 
-        var time = data[i].time;
+    var template = $.templates("#employeeEvents");
 
-        var dataItem = data[i].data;
+    var htmlOutput = template.render(eventData);
 
-        var msg = getEventMsg(dataItem);
-
-
-        sb = sb + " <div class=\"item\" id ='item_" + id + "' >" +
-            "            <img src=\"orangeApp/orange/dist/img/notification_icon.png\" alt=\"user image\" class=\"offline\">" +
-            "            <p class=\"message\">" +
-            "              <a href=\"javascript:getEventDetails(" + dataItem.employeeId + ",'" + dataItem.type + "')\" class=\"name\" >" +
-            "                <small class=\"text-muted pull-right\"><i class=\"fa fa-clock-o\"></i>" + time + "</small>" +
-            "               " + dataItem.employeeName +
-            "              </a>" +
-            msg +
-            "            </p>" +
-            "          </div>";
-
-
-    }
-
-    $("#notificationItemsContainer").html(sb);
+    $("#notificationItemsContainer").html(htmlOutput);
 
 
 }
 
+/**
+ * Getting the EMPLOYEE notification message according to the
+ * event type
+ * @param dataItem
+ * @returns {string}
+ */
+function getNotificationMessage(dataItem) {
 
-function getEventMsg(dataItem) {
-
-    var str = ' ';
+    var msgString = ' ';
 
     var employeeName = dataItem.employeeName;
     var event = dataItem.event;
     var type = dataItem.type;
 
 
-    str = str + employeeName + ' ';
+    msgString = msgString + employeeName + ' ';
 
     if ('employee' === type) {
 
         if ('UPDATE' == event) {
-            str = str + 'Updated Personal Details'
+            msgString = msgString + 'Updated Personal Details'
         } else if ('SAVE' == event) {
-            str = str + 'Joined';
+            msgString = msgString + 'Joined';
 
 
         }
@@ -130,53 +119,47 @@ function getEventMsg(dataItem) {
     } else if ('contact' === type) {
 
         if ('UPDATE' === event) {
-            str = str + 'Updated Contact Details'
+            msgString = msgString + 'Updated Contact Details'
         }
 
     } else if ('supervisor' === type) {
 
         if ('UPDATE' === event) {
-            str = str + 'Updated Supervisor Details'
+            msgString = msgString + 'Updated Supervisor Details'
         } else if ('SAVE' === event) {
-            str = str + 'Assigned a Supervisor'
+            msgString = msgString + 'Assigned a Supervisor'
         }
 
     } else if ('jobDetail' === type) {
 
         if ('UPDATE' === event) {
-            str = str + 'Updated Job Details'
+            msgString = msgString + 'Updated Job Details'
         }
 
     }
 
-
-    return str;
-
-
+    return msgString;
 }
 
-
-function getEventDetails(empId, type) {
-
-
-    getEmployeeDetails(empId, type);
-
-
-}
 
 function goBack() {
-    setEvents(eventItems);
+    setNotifications(eventItems);
 }
-
-function getEmployeeDetails(empId, type) {
+/**
+ * Getting additional notification details
+ * once event is clicked
+ * @param empId
+ * @param type
+ */
+function getNotificationDetails(empId, type) {
 
     $.ajax({
         url: "data.php",
         method: "POST",
-        data: {id: empId, type: type , event:'getEventData'},
+        data: {id: empId, type: type, event: 'getEventData'},
         dataType: "json",
         success: function (data) {
-            getEventAdditionalDetails(data, type);
+            getAdditionalNotificationDetails(data, type);
         },
         error: function (jqXHR, textStatus, errorThrown) {
             $('#info').html(textStatus + ", " + errorThrown);
@@ -189,68 +172,38 @@ function getEmployeeDetails(empId, type) {
  * @param eventData
  * @param type
  */
-function getEventAdditionalDetails(eventData, type) {
+function getAdditionalNotificationDetails(eventData, type) {
 
 
-    var str = '';
+    var template = null;
+    var htmlOutput = null;
+
 
     if ('employee' === type) {
-        str = "<ul>" +
-            "  <li>" + "Name : " + eventData.data.fullName + "</li>" +
-            "  <li>" + "Gender: " + eventData.data.gender + "</li>" +
-            "  <li>" + "Job Title : " + eventData.data.jobTitle + "</li>" +
-            "  <li>" + "Nationality : " + eventData.data.nationality + "</li>" +
-            "  <li>" + "DOB : " + eventData.data.dob + "</li>" +
-            // "  <li>"+"State : " + eventData.data.state +"</li>" +
 
-            "</ul>";
+         template = $.templates("#employeeNotification");
+         htmlOutput = template.render(eventData.data);
 
     } else if ('contact' === type) {
 
-        str = "<ul>" +
-            "  <li>" + "Name : " + eventData.data.fullName + "</li>" +
-            "  <li>" + "Mobile : " + eventData.data.mobile + "</li>" +
-            "  <li>" + "Work Email : " + eventData.data.workEmail + "</li>" +
-            "  <li>" + "Other Email : " + eventData.data.otherEmail + "</li>" +
-            "  <li>" + "Work Phone : " + eventData.data.workTelephone + "</li>" +
-            // "  <li>"+"State : " + eventData.data.state +"</li>" +
-
-            "</ul>";
-
+        template = $.templates("#employeeNotification");
+        htmlOutput = template.render(eventData.data);
 
     } else if ('supervisor' === type) {
 
-        str = "<ul>" +
-            "  <li>" + "Supervisor Name : " + eventData.data[0].name + "</li>" +
-            "  <li>" + "Reporting Method : " + eventData.data[0].reportingMethod + "</li>" +
+        template = $.templates("#supervisorNotification");
+        htmlOutput = template.render(eventData.data);
 
-
-            "</ul>";
 
     } else if ('jobDetail' === type) {
 
-        str = "<ul>" +
-            "  <li>" + "Status : " + eventData.data.status + "</li>" +
-            "  <li>" + "Job Title : " + eventData.data.title + "</li>" +
-            "  <li>" + "Unit : " + eventData.data.subunit + "</li>" +
-            "  <li>" + "Category : " + eventData.data.category + "</li>" +
-            "  <li>" + "Location: " + eventData.data.location + "</li>" +
-            // "  <li>"+"State : " + eventData.data.state +"</li>" +
-
-            "</ul>";
+        template = $.templates("#jobDetailsNotification");
+        htmlOutput = template.render(eventData.data);
 
     }
 
 
-    $htmlPanel = " <div class=\"panel panel-info\">" +
-        "      <div class=\"panel-heading\">Notification</div>" +
-        "      <div class=\"panel-body\">" + str + "</div>" +
-        "    </div>";
-
-
-    var sb = '<button class="backbutton button1"  onclick="goBack()" >Back</button>';
-    $htmlPanel = $htmlPanel + sb;
-    $("#notificationItemsContainer").html($htmlPanel);
+    $("#notificationItemsContainer").html(htmlOutput);
 
 }
 /**
@@ -273,64 +226,22 @@ function updateData(data) {
  */
 function showNewUsers() {
 
-    var sb = '';
-    for (var i in newUsers) {
+    var template = $.templates("#newUsers");
 
-        $usersString = newUsers[i].employeeName + " has joined on " + newUsers[i].createdDate;
+    var htmlOutput = template.render(newUsers);
 
-        var id = newUsers[i].employeeId;
-
-
-        sb = sb + " <div class=\"item\" id ='item_" + id + "' >" +
-            "            <img src=\"orangeApp/orange/dist/img/notification_icon.png\" alt=\"user image\" class=\"offline\">" +
-            "            <p class=\"message\">" +
-            "              <a href=\"#\" class=\"name\" >" +
-            "                <small class=\"text-muted pull-right\"><i class=\"fa fa-clock-o\"></i>" + "</small>" +
-            "               " + newUsers[i].employeeName +
-            "              </a>" +
-            $usersString +
-            "            </p>" +
-            "          </div>";
-
-
-    }
-    var backButton = '<button class="backbutton button1"  onclick="goBack()" >Back</button>';
-    sb = sb + backButton;
-
-    $("#notificationItemsContainer").html(sb);
-
+    $("#notificationItemsContainer").html(htmlOutput);
 }
 /**
  * show leave request notifications
  */
 function showLeaveRequests() {
 
-    var sb = '';
-    for (var i in leaveRequests.data) {
+    var template = $.templates("#empLeaveRequests");
 
+    var htmlOutput = template.render(leaveRequests.data);
 
-        $leaveString = leaveRequests.data[i].employeeName + " is applied for " + leaveRequests.data[i].type + " Leave from " + leaveRequests.data[i].fromDate + " to " + leaveRequests.data[i].toDate;
-
-        var id = leaveRequests.data[i].employeeId;
-
-
-        sb = sb + " <div class=\"item\" id ='item_" + id + "' >" +
-            "            <img src=\"orangeApp/orange/dist/img/notification_icon.png\" alt=\"user image\" class=\"offline\">" +
-            "            <p class=\"message\">" +
-            "              <a href=\"#\" class=\"name\" >" +
-            "                <small class=\"text-muted pull-right\"><i class=\"fa fa-clock-o\"></i>" + "</small>" +
-            "               " + leaveRequests.data[i].employeeName +
-            "              </a>" +
-            $leaveString +
-            "            </p>" +
-            "          </div>";
-
-
-    }
-    var backButton = '<button class="backbutton button1"  onclick="goBack()" >Back</button>';
-    sb = sb + backButton;
-
-    $("#notificationItemsContainer").html(sb);
+    $("#notificationItemsContainer").html(htmlOutput);
 
 }
 /**
@@ -338,30 +249,36 @@ function showLeaveRequests() {
  */
 function showTodayLeave() {
 
-    var sb = '';
-    for (var i in onLeavetoday.data) {
 
-        $leaveString = onLeavetoday.data[i].employeeName + " is on " + onLeavetoday.data[i].type + " Leave from " + onLeavetoday.data[i].fromDate + " to " + onLeavetoday.data[i].toDate;
+    var template = $.templates("#onLeave");
 
-        var id = onLeavetoday.data[i].employeeId;
+    var htmlOutput = template.render(onLeavetoday.data);
 
-
-        sb = sb + " <div class=\"item\" id ='item_" + id + "' >" +
-            "            <img src=\"orangeApp/orange/dist/img/notification_icon.png\" alt=\"user image\" class=\"offline\">" +
-            "            <p class=\"message\">" +
-            "              <a href=\"#\" class=\"name\" >" +
-            "                <small class=\"text-muted pull-right\"><i class=\"fa fa-clock-o\"></i>" + "</small>" +
-            "               " + onLeavetoday.data[i].employeeName +
-            "              </a>" +
-            $leaveString +
-            "            </p>" +
-            "          </div>";
-
-
-    }
-    var backButton = '<button class="backbutton button1"  onclick="goBack()" >Back</button>';
-    sb = sb + backButton;
-
-    $("#notificationItemsContainer").html(sb);
+    $("#notificationItemsContainer").html(htmlOutput);
 
 }
+
+/**
+ * Creating the notification object from event details
+ * @param data
+ * @returns {Array}
+ */
+function createNotificationItems(data) {
+
+    var eventsArray = [];
+    for (var i in data) {
+
+        eventsArray.push({
+            id: data[i].data.employeeId,
+            sortable: data[i].time,
+            msg: getNotificationMessage(data[i].data),
+            name:data[i].data.employeeName,
+            event:data[i].data.type
+        });
+    }
+
+    return eventsArray;
+}
+
+
+
