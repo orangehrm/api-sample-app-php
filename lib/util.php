@@ -22,6 +22,50 @@ use Orangehrm\API\Client;
 use Orangehrm\API\HTTPRequest;
 
 /**
+ * Get Employee Events
+ *
+ * @param Client $client
+ *
+ * @return array
+ */
+function getEmployeeEvents($client) {
+    try {
+        $fromDate = date('Y-m-d', strtotime("30 days"));
+        $toDate = date('Y-m-d', strtotime("+1 days"));
+
+        $employeeEventEndPoint = sprintf('employee/event?fromDate=%s&toDate=%s', $fromDate, $toDate);
+        $employeeEventRequest = new HTTPRequest($employeeEventEndPoint);
+
+        return $client->get($employeeEventRequest)->getResult();
+    }
+    catch (Exception $e) {
+        logError($e->getMessage());
+    }
+}
+
+/**
+ * Get Leave Events
+ *
+ * @param Client $client
+ *
+ * @return array
+ */
+function getLeaveEvents($client) {
+    try {
+        $fromDate = date('Y-m-d', strtotime("30 days"));
+        $toDate = date('Y-m-d', strtotime("+1 days"));
+
+        $leaveEndPoint = sprintf('leave/search?fromDate=%s&toDate=%s', $fromDate, $toDate);
+        $leaveRequest = new HTTPRequest($leaveEndPoint);
+
+        return $client->get($leaveRequest)->getResult();
+    }
+    catch (Exception $e) {
+        logError($e->getMessage());
+    }
+}
+
+/**
  * Get additional Event details
  */
 function getEventData($type, $employeeId, $client)
