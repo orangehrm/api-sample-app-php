@@ -18,31 +18,32 @@
  */
 
 
-
 require_once 'config.php';
-
-require_once 'lib/util.php';
+require_once 'lib/Util.php';
 
 
 use Orangehrm\API\Client;
-use Orangehrm\API\HTTPRequest;
 
 
 $client = new Client($config->host, $config->clientId, $config->clientSecret);
-
+$util  = new Util();
+$util->setClient($client);
 //Load the event Data
 
-$event =$_POST["event"];
-$type = $_POST["type"];
-$employeeId = $_POST["id"];
+$event = isset($_POST["event"]) ? $_POST["event"] : null;
+$type = isset($_POST["type"]) ? $_POST["type"] : null;
+$employeeId = isset($_POST["id"]) ? $_POST["id"] : null;
 
 // call the the util method
 // based on the event type
-if($event == 'getEventData'){
-    getEventData($type,$employeeId,$client);
-}else if ($event == 'createEvents'){
-    createEvents($client);
-}
+
+    if ($event == 'getEventData') {
+        echo $util->getEventData($type, $employeeId, $client);
+    } else {
+        if ($event == 'createEvents') {
+            echo $util->createEvents($client);
+        }
+    }
 
 ?>
 
