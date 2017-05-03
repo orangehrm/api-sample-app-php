@@ -52,9 +52,9 @@ class Util
      */
     function getEventData($type, $employeeId)
     {
+        $request = null;
 
         try {
-            $request = null;
 
             switch ($type) {
                 case 'supervisor':
@@ -67,7 +67,7 @@ class Util
                     break;
                 case 'contact':
                     $contactDetailUrl = "employee/" . $employeeId . "/contact-detail";
-                    $request =$this->createRequest($contactDetailUrl);
+                    $request = $this->createRequest($contactDetailUrl);
                     break;
                 case 'jobDetail':
                     $jobDetailUrl = "employee/" . $employeeId . "/job-detail";
@@ -76,13 +76,13 @@ class Util
             }
 
             $result = $this->client->get($request)->getResult();
-
             return json_encode($result);
+
         } catch (Exception $e) {
             $this->logError();
         }
 
-
+        return null;
     }
 
     /**
@@ -107,8 +107,18 @@ class Util
              * getting leave requests
              * End point : leave/search
              */
-            $leaveRequestsUrl = 'leave/search?reject=false&cancelled=false&pendingApproval=true&scheduled=false&taken=false&pastEmployee&page=0&limit=10';
-            $leaveRequest = $this->createRequest($leaveRequestsUrl);// move to seperate method
+            $leaveRequestParamArray = array(
+                'reject' => 'false',
+                'cancelled' => 'false',
+                'pendingApproval' => 'true',
+                'scheduled' => 'false',
+                'taken' => 'false',
+                'page' => 0,
+                'limit' => 20
+            );
+            $leaveRequestParams = $this->buildUrlParameters($leaveRequestParamArray);
+            $leaveRequestsUrl = 'leave/search?'.$leaveRequestParams;
+            $leaveRequest = $this->createRequest($leaveRequestsUrl);
             $leaveResults = $this->client->get($leaveRequest)->getResult();
 
             /**
@@ -118,7 +128,20 @@ class Util
              * taken:true
              * date : today
              */
-            $leavesUrl = 'leave/search?reject=false&cancelled=false&pendingApproval=false&scheduled=true&taken=true&pastEmployee&page=0&limit=10&fromDate=' . $now . '&toDate=' . $now;
+            $onLeaveUrlParamArray  = array(
+                'reject' => 'false',
+                'cancelled' => 'false',
+                'pendingApproval' => 'false',
+                'scheduled' => 'true',
+                'taken' => 'false',
+                'page' => 0,
+                'limit' => 20,
+                'fromDate'=> $now,
+                'toDate'  => $now  // searching for the same day
+
+            );
+            $onLeaveTodayParams = $this->buildUrlParameters($onLeaveUrlParamArray);
+            $leavesUrl = 'leave/search?'.$onLeaveTodayParams;
             $leavesToday = $this->createRequest($leavesUrl);
             $leavesInToday = $this->client->get($leavesToday)->getResult();
 
@@ -138,7 +161,15 @@ class Util
              * parameters : date range for 30 days
              * event = SAVE ( getting saved employees )
              */
-            $newlyJoined = 'employee/event?fromDate=' . $lastDay . '&toDate=' . $tomorrow . '&type=employee&event=SAVE';
+            $newlyJoinedParamArray  = array(
+                'fromDate' => $lastDay,
+                'toDate' => $tomorrow,
+                'type' => 'employee',
+                'event' => 'SAVE'
+
+            );
+            $newlyJoinedParamUrl = $this->buildUrlParameters($newlyJoinedParamArray);
+            $newlyJoined = 'employee/event?'.$newlyJoinedParamUrl;
             $newlyJoinedRequest = $this->createRequest($newlyJoined);
             $newlyJoinedResults = $this->client->get($newlyJoinedRequest)->getResult();
 
@@ -183,5 +214,18 @@ class Util
     {
         return new HTTPRequest($url);
     }
+
+    /**
+     * Building the url parameters
+     *
+     * @param $paramArray
+     * @return string
+     */
+    private function buildUrlParameters($paramArray)
+    {
+        return http_build_query($paramArray);
+
+    }
+
 
 }
