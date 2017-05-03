@@ -24,8 +24,8 @@ use Orangehrm\API\HTTPRequest;
 /**
  * Get additional Event details
  */
-function getEventData($type,$employeeId,$client) {
-
+function getEventData($type, $employeeId, $client)
+{
 
 
     $supervisorUrl = "employee/" . $employeeId . "/supervisor";
@@ -42,27 +42,33 @@ function getEventData($type,$employeeId,$client) {
      * checking for event type to get the additional information
      * related to the event
      */
-    try {  $request = null;
+    try {
+        $request = null;
 
         if ('supervisor' == $type) {
             $request = new HTTPRequest($supervisorUrl);
-        }
-        else if ('employee' == $type) {
-            $request = new HTTPRequest($employeeDetailUrl);
-        }
-        else if ('contact' == $type) {
+        } else {
+            if ('employee' == $type) {
+                $request = new HTTPRequest($employeeDetailUrl);
+            } else {
+                if ('contact' == $type) {
 
-            $request = new HTTPRequest($contactDetailUrl);
+                    $request = new HTTPRequest($contactDetailUrl);
 
-        }else if ('jobDetail' == $type) {
+                } else {
+                    if ('jobDetail' == $type) {
 
-            $request = new HTTPRequest($jobDetailUrl);
+                        $request = new HTTPRequest($jobDetailUrl);
 
+                    }
+                }
+            }
         }
 
         $result = $client->get($request)->getResult();
 
-        echo json_encode($result);}catch (Exception $e){
+        echo json_encode($result);
+    } catch (Exception $e) {
 
     }
 
@@ -73,16 +79,17 @@ function getEventData($type,$employeeId,$client) {
  * Create event data
  * @param $client
  */
-function createEvents($client){
+function createEvents($client)
+{
 
 
     $date = date("Y-m-d");
 
-    $latDay = date('Y-m-d', strtotime("30 days"));
+    $lastDay = date('Y-m-d', strtotime("30 days"));
 
     $tomorrow = date('Y-m-d', strtotime("+1 days"));
 
-    $paramString = 'employee/event?fromDate=' . $latDay . '&toDate=' . $tomorrow;
+    $paramString = 'employee/event?fromDate=' . $lastDay . '&toDate=' . $tomorrow;
 
     $str2 = 'employee/event?fromDate=2017-04-01&toDate=2017-04-30&type=employee&event=SAVE';
 
@@ -109,8 +116,8 @@ function createEvents($client){
         $leavesInToday = $client->get($leavesToday)->getResult();
 
         $employeeEventUrl = 'employee/event';
-        $EventRequest = new HTTPRequest($employeeEventUrl);
-        $data = $client->get($EventRequest)->getResult();
+        $eventRequest = new HTTPRequest($employeeEventUrl);
+        $data = $client->get($eventRequest)->getResult();
 
 
         $rowId = 0;
@@ -140,6 +147,7 @@ function createEvents($client){
 }
 
 
-function logError() {
+function logError()
+{
 
 }
