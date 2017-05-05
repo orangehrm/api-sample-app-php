@@ -46,7 +46,10 @@ function getEmployeeEventData() {
         success: function (data) {
 
             eventItems = data.data.reverse();
-            setNotifications(data.data.reverse());
+            if(data.data.reverse() != null ) {
+                setNotifications(data.data.reverse());
+            }
+
             updateData(data);
             onLeavetoday = data.onLeave;
             leaveRequests = data.leaveRequests;
@@ -197,7 +200,6 @@ function updateData(data) {
 
     var today = data.onLeave.data;
     var total = data.leaveRequests.data;
-
     $("#leaveToday").text(today.length);
     $("#leaveRequests").text(total.length);
     $("#empEvents").text(eventItems.length);
