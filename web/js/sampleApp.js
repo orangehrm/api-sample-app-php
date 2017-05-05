@@ -45,8 +45,8 @@ function getEmployeeEventData() {
         dataType: "json",
         success: function (data) {
 
-            eventItems = data.data;
-            setNotifications(data.data);
+            eventItems = data.data.reverse();
+            setNotifications(data.data.reverse());
             updateData(data);
             onLeavetoday = data.onLeave;
             leaveRequests = data.leaveRequests;
@@ -74,18 +74,11 @@ function refreshEvents() {
  */
 function setNotifications(data) {
 
-    data.reverse();
-
-     var eventData = createNotificationItems(data);
-
-    console.log(eventData);
-
+    var eventData = createNotificationItems(data);
     var template = $.templates("#employeeEvents");
-
     var htmlOutput = template.render(eventData);
 
     $("#notificationItemsContainer").html(htmlOutput);
-
 
 }
 
@@ -98,44 +91,38 @@ function setNotifications(data) {
 function getNotificationMessage(dataItem) {
 
     var msgString = ' ';
-
     var employeeName = dataItem.employeeName;
     var event = dataItem.event;
     var type = dataItem.type;
 
-
     msgString = msgString + employeeName + ' ';
 
-    if ('employee' === type) {
+    switch (type) {
+        case 'employee':
 
-        if ('UPDATE' == event) {
-            msgString = msgString + 'Updated Personal Details'
-        } else if ('SAVE' == event) {
-            msgString = msgString + 'Joined';
-
-
-        }
-
-    } else if ('contact' === type) {
-
-        if ('UPDATE' === event) {
-            msgString = msgString + 'Updated Contact Details'
-        }
-
-    } else if ('supervisor' === type) {
-
-        if ('UPDATE' === event) {
-            msgString = msgString + 'Updated Supervisor Details'
-        } else if ('SAVE' === event) {
-            msgString = msgString + 'Assigned a Supervisor'
-        }
-
-    } else if ('jobDetail' === type) {
-
-        if ('UPDATE' === event) {
-            msgString = msgString + 'Updated Job Details'
-        }
-
+            if ('UPDATE' == event) {
+                msgString = msgString + 'Updated Personal Details'
+            } else if ('SAVE' == event) {
+                msgString = msgString + 'Joined';
+            }
+            break;
+        case 'contact':
+            if ('UPDATE' === event) {
+                msgString = msgString + 'Updated Contact Details'
+            }
+            break;
+        case 'supervisor':
+            if ('UPDATE' === event) {
+                msgString = msgString + 'Updated Supervisor Details'
+            } else if ('SAVE' === event) {
+                msgString = msgString + 'Assigned a Supervisor'
+            }
+            break;
+        case 'jobDetail':
+            if ('UPDATE' === event) {
+                msgString = msgString + 'Updated Job Details'
+            }
+            break;
     }
 
     return msgString;
@@ -174,15 +161,13 @@ function getNotificationDetails(empId, type) {
  */
 function getAdditionalNotificationDetails(eventData, type) {
 
-
     var template = null;
     var htmlOutput = null;
 
-
     if ('employee' === type) {
 
-         template = $.templates("#employeeNotification");
-         htmlOutput = template.render(eventData.data);
+        template = $.templates("#employeeNotification");
+        htmlOutput = template.render(eventData.data);
 
     } else if ('contact' === type) {
 
@@ -202,9 +187,7 @@ function getAdditionalNotificationDetails(eventData, type) {
 
     }
 
-
     $("#notificationItemsContainer").html(htmlOutput);
-
 }
 /**
  * Update Notification count on Top Icons
@@ -224,10 +207,9 @@ function updateData(data) {
 /**
  * show new Users
  */
-function showNewUsers() {
+function showNewMembers() {
 
     var template = $.templates("#newUsers");
-
     var htmlOutput = template.render(newUsers);
 
     $("#notificationItemsContainer").html(htmlOutput);
@@ -238,8 +220,7 @@ function showNewUsers() {
 function showLeaveRequests() {
 
     var template = $.templates("#empLeaveRequests");
-
-    var htmlOutput = template.render(leaveRequests.data);
+    var htmlOutput = template.render(leaveRequests.data.reverse());
 
     $("#notificationItemsContainer").html(htmlOutput);
 
@@ -247,11 +228,9 @@ function showLeaveRequests() {
 /**
  * Show today leave notifications
  */
-function showTodayLeave() {
-
+function showOnLeaveToday() {
 
     var template = $.templates("#onLeave");
-
     var htmlOutput = template.render(onLeavetoday.data);
 
     $("#notificationItemsContainer").html(htmlOutput);
@@ -272,8 +251,8 @@ function createNotificationItems(data) {
             id: data[i].data.employeeId,
             sortable: data[i].time,
             msg: getNotificationMessage(data[i].data),
-            name:data[i].data.employeeName,
-            event:data[i].data.type
+            name: data[i].data.employeeName,
+            event: data[i].data.type
         });
     }
 
