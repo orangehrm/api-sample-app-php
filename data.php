@@ -41,7 +41,7 @@ $employeeId = isset($_POST["id"]) ? $_POST["id"] : null;
         echo $util->getEventData($type, $employeeId, $client);
     } else {
         if ($event == 'createEvents') {
-            echo $util->createEvents($client);
+        echo $util->createEvents($client);
         }
     }
 
