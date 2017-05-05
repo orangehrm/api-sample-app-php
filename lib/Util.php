@@ -79,7 +79,7 @@ class Util
             return json_encode($result);
 
         } catch (Exception $e) {
-            $this->logError();
+            $this->logError($e->getMessage());
         }
 
         return null;
@@ -93,11 +93,7 @@ class Util
     function createEvents()
     {
 
-        $now = date("Y-m-d");
-        $lastDay = date('Y-m-d', strtotime("-30 days"));
-        $tomorrow = date('Y-m-d', strtotime("+1 days"));
-
-        $paramString = 'employee/event?fromDate=' . $lastDay . '&toDate=' . $tomorrow;
+        $currentDate = date("Y-m-d");
         $leaveData = null;
         $eventData = null;
 
@@ -136,8 +132,8 @@ class Util
                 'taken' => 'false',
                 'page' => 0,
                 'limit' => 20,
-                'fromDate'=> $now,
-                'toDate'  => $now  // searching for the same day
+                'fromDate'=> $currentDate,
+                'toDate'  => $currentDate  // searching for the same day
 
             );
             $onLeaveTodayParams = $this->buildUrlParameters($onLeaveUrlParamArray);
@@ -151,7 +147,12 @@ class Util
              * date from yesterday
              * to current date
              */
-            $employeeEventUrl = 'employee/event';
+            $employeeEventParamArray  = array(
+                'fromDate' => date('Y-m-d', strtotime("-1 days")),
+                'toDate' => date('Y-m-d', strtotime("+1 days"))
+
+            );
+            $employeeEventUrl = 'employee/event?'.$this->buildUrlParameters($employeeEventParamArray);
             $eventRequest = $this->createRequest($employeeEventUrl);
             $data = $this->client->get($eventRequest)->getResult();
 
@@ -162,8 +163,8 @@ class Util
              * event = SAVE ( getting saved employees )
              */
             $newlyJoinedParamArray  = array(
-                'fromDate' => $lastDay,
-                'toDate' => $tomorrow,
+                'fromDate' => date('Y-m-d', strtotime("-30 days")), // last 30 days
+                'toDate' => date('Y-m-d', strtotime("+1 days")),
                 'type' => 'employee',
                 'event' => 'SAVE'
 
@@ -172,6 +173,7 @@ class Util
             $newlyJoined = 'employee/event?'.$newlyJoinedParamUrl;
             $newlyJoinedRequest = $this->createRequest($newlyJoined);
             $newlyJoinedResults = $this->client->get($newlyJoinedRequest)->getResult();
+
 
             $rowId = 0;
             $dateTime = date("Y-m-d h:i:sa");
@@ -194,14 +196,14 @@ class Util
             return json_encode($events);
 
         } catch (Exception $e) {
-            $this->logError();
+            $this->logError($e->getMessage());
         }
     }
 
 
-    function logError()
+    function logError($msg)
     {
-
+        $_SESSION["errorMsg"]='$msg';
     }
 
     /**
