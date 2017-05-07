@@ -22,10 +22,10 @@ require_once 'vendor/autoload.php';
 $config = new stdClass();
 
 //Orangehrm instance URL
-$config->host = 'http://localhost/';
+$config->host = 'https://api-sample-cs.orangehrm.com';
 
 //Client Id
-$config->clientId = 'Id goes here';
+$config->clientId = 'testclient';
 
 //Client secret
-$config->clientSecret= 'Id goes here';
+$config->clientSecret= 'testpass';
