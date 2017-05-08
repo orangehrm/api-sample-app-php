@@ -203,6 +203,7 @@ class Util
 
     function logError($msg)
     {
+        print($msg);
         $_SESSION["errorMsg"]='$msg';
     }
 
