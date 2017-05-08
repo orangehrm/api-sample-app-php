@@ -45,15 +45,20 @@ function getEmployeeEventData() {
         dataType: "json",
         success: function (data) {
 
-            eventItems = data.data.reverse();
-            if(data.data.reverse() != null ) {
-                setNotifications(data.data.reverse());
+            if(data.success == 1){
+                eventItems = data.data.reverse();
+                if(data.data!= null ) {
+                    setNotifications(data.data.reverse());
+                }
+
+                updateData(data);
+                onLeavetoday = data.onLeave;
+                leaveRequests = data.leaveRequests;
+                newUsers = data.newMembers.data;
+            }else {
+                window.alert(data.msg);
             }
 
-            updateData(data);
-            onLeavetoday = data.onLeave;
-            leaveRequests = data.leaveRequests;
-            newUsers = data.newMembers.data;
 
 
         },
@@ -149,7 +154,12 @@ function getNotificationDetails(empId, type) {
         data: {id: empId, type: type, event: 'getEventData'},
         dataType: "json",
         success: function (data) {
-            getAdditionalNotificationDetails(data, type);
+            if(data.success == 1){
+                getAdditionalNotificationDetails(data, type);
+            }else {
+                window.alert(data.msg);
+            }
+
         },
         error: function (jqXHR, textStatus, errorThrown) {
             $('#info').html(textStatus + ", " + errorThrown);
