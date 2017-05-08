@@ -56,7 +56,7 @@ function getEmployeeEventData() {
                 leaveRequests = data.leaveRequests;
                 newUsers = data.newMembers.data;
             }else {
-                window.alert(data.msg);
+                $.notify("Warning:"+ data.msg, "warn");
             }
 
 
