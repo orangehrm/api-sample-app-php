@@ -76,13 +76,16 @@ class Util
             }
 
             $result = $this->client->get($request)->getResult();
+            $result['success'] = 1;
             return json_encode($result);
 
         } catch (Exception $e) {
             $this->logError($e->getMessage());
+            $result['success'] = 0;
+            $result['msg'] = $e->getMessage();
+            return json_encode($result);
         }
 
-        return null;
     }
 
     /**
@@ -187,7 +190,7 @@ class Util
                 $rowId++;
 
             }
-
+            $events['success'] = '1';
             $events['data'] = $eventData;
             $events['leaveRequests'] = $leaveResults;
             $events['onLeave'] = $leavesInToday;
@@ -197,6 +200,10 @@ class Util
 
         } catch (Exception $e) {
             $this->logError($e->getMessage());
+            $events['success'] = '0';
+            $events['msg']     = $e->getMessage();
+            return json_encode($events);
+
         }
     }
 
