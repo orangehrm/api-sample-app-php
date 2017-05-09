@@ -22,7 +22,7 @@
     <script src="web/js/jquery1.4.js"></script>
     <script src="web/js/sampleApp.js"></script>
     <script src="web/js/jsrender.js"></script>
-
+    <script src="web/js/notify.js"></script>
 
     <!--
     JS render templates section
@@ -194,10 +194,7 @@
                             </li>
                         </ul>
                     </li>
-                    <!-- Control Sidebar Toggle Button -->
-                    <li>
-                        <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-                    </li>
+
                 </ul>
             </div>
         </nav>
@@ -224,19 +221,9 @@
             <ul class="sidebar-menu">
                 <li class="header">HEADER</li>
                 <!-- Optionally, you can add icons to the links -->
-                <li class="active"><a href="#"><i class="fa fa-link"></i> <span>Link</span></a></li>
-                <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
-                <li class="treeview">
-                    <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span>
-                        <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="#">Link in level 2</a></li>
-                        <li><a href="#">Link in level 2</a></li>
-                    </ul>
-                </li>
+                <li class="active"><a href="#"><i class="fa fa-link"></i> <span>Dashboard</span></a></li>
+
+
             </ul>
             <!-- /.sidebar-menu -->
         </section>
@@ -251,10 +238,6 @@
                 Notifications
                 <small>Dashboard</small>
             </h1>
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol>
         </section>
 
         <!-- Main content -->
@@ -265,7 +248,7 @@
             <div class="row">
                 <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box" onclick="goBack()">
-                        <span class="info-box-icon bg-aqua"><i class="fa fa-list-alt"></i></span>
+                        <span class="info-box-icon bg-aqua"><img src="orangeApp/orange/dist/img/events_icon.png" class="user-image" alt="User Image"></span>
 
                         <div class="info-box-content">
                             <span class="info-box-text">Notifications</span>
@@ -278,7 +261,7 @@
                 <!-- /.col -->
                 <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box" onclick="showOnLeaveToday()">
-                        <span class="info-box-icon bg-red"><i class="fa  fa-ticket"></i></span>
+                        <span class="info-box-icon bg-red"><img src="orangeApp/orange/dist/img/leave_icon.png" class="user-image" alt="User Image"></i></span>
 
                         <div class="info-box-content">
                             <span class="info-box-text"><small>On Leave Today</small></span>
@@ -295,7 +278,7 @@
 
                 <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box" onclick="showLeaveRequests()">
-                        <span class="info-box-icon bg-green"><i class="fa fa-file-text"></i></span>
+                        <span class="info-box-icon bg-green"><img src="orangeApp/orange/dist/img/leave_request.png" class="user-image" alt="User Image"></span>
 
                         <div class="info-box-content">
                             <span class="info-box-text">Leave Requests</span>
@@ -308,7 +291,7 @@
                 <!-- /.col -->
                 <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box" onclick="showNewMembers()">
-                        <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+                        <span class="info-box-icon bg-yellow"><img src="orangeApp/orange/dist/img/new_user.png" class="user-image" alt="User Image"></i></span>
 
                         <div class="info-box-content">
                             <span class="info-box-text">New Members</span>
@@ -368,7 +351,8 @@
             Notification Dashboard
         </div>
         <!-- Default to the left -->
-        <strong>Notifications dashboard &copy; 2017 by <a href="https://www.orangehrm.com/">OrangeHrm</a></strong>.
+        <strong>Notifications dashboard © 2005 - <script>document.write(new Date().getFullYear())</script> <br> <a target="_blank" href="https://www.orangehrm.com/">OrangeHRM, Inc</a></strong>.All rights reserved
+
     </footer>
 
     <!-- Control Sidebar -->
