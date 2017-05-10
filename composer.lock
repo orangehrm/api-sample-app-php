@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "3b685f70b5ff4ed3763a9a360d667e58",
+    "content-hash": "8f4fbebd45012fa5b94d99921854f947",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -186,16 +186,16 @@
         },
         {
             "name": "orangehrm/api-client-php",
-            "version": "v1.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/orangehrm/api-client-php.git",
-                "reference": "3456c7f3fbe0b0c94c0c658cf3e7b199af048894"
+                "reference": "b6787f13d65b9eb8f779e9a445a545b12e28a6ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orangehrm/api-client-php/zipball/3456c7f3fbe0b0c94c0c658cf3e7b199af048894",
-                "reference": "3456c7f3fbe0b0c94c0c658cf3e7b199af048894",
+                "url": "https://api.github.com/repos/orangehrm/api-client-php/zipball/b6787f13d65b9eb8f779e9a445a545b12e28a6ac",
+                "reference": "b6787f13d65b9eb8f779e9a445a545b12e28a6ac",
                 "shasum": ""
             },
             "require": {
@@ -225,7 +225,7 @@
                 "api",
                 "rest"
             ],
-            "time": "2017-04-18T01:03:15+00:00"
+            "time": "2017-05-09T11:36:02+00:00"
         },
         {
             "name": "psr/http-message",
