@@ -99,6 +99,7 @@ class Util
         $currentDate = date("Y-m-d");
         $leaveData = null;
         $eventData = null;
+        $eventResponse = null;
 
         try {
 
@@ -115,15 +116,16 @@ class Util
                 'page' => 0,
                 'limit' => 20
             );
+
             $leaveRequestParams = $this->buildUrlParameters($leaveRequestParamArray);
             $leaveRequestsUrl = 'leave/search?' . $leaveRequestParams;
             $leaveRequest = $this->createRequest($leaveRequestsUrl);
-            $LeaveRequestResponse = $this->client->get($leaveRequest);
+            $leaveRequestResponse = $this->client->get($leaveRequest);
 
-            if ($LeaveRequestResponse->getStatusCode() == 200) {
+            if (!$leaveRequestResponse->hasError()) {
 
-                $leaveResults['status'] = 200;
-                $leaveResults['response'] = $LeaveRequestResponse->getResult();
+                $leaveResults['status'] = $leaveRequestResponse->getStatusCode();
+                $leaveResults['response'] = $leaveRequestResponse->getResult();
 
             } else {
 
@@ -155,7 +157,7 @@ class Util
             $leavesToday = $this->createRequest($leavesUrl);
             $leaveTodayResponse = $this->client->get($leavesToday);
 
-            if ($leaveTodayResponse->getStatusCode() == 200) {
+            if (!$leaveTodayResponse->hasError()) {
 
                 $leavesInToday['status'] = 200;
                 $leavesInToday['response'] = $leaveTodayResponse->getResult();
@@ -176,16 +178,33 @@ class Util
                 'toDate' => date('Y-m-d', strtotime("+1 days"))
 
             );
+
             $employeeEventUrl = 'employee/event?' . $this->buildUrlParameters($employeeEventParamArray);
             $eventRequest = $this->createRequest($employeeEventUrl);
             $dataResponse = $this->client->get($eventRequest);
-            if ($dataResponse->getStatusCode() == 200) {
+
+            if (!$dataResponse->hasError()) {
 
                 $data = $dataResponse->getResult();
+                $rowId = 0;
+                $dateTime = date("Y-m-d h:i:sa");
+
+                foreach ($data['data'] as $employeeEvent) {
+
+                    $eventDataItem['id'] = $rowId;
+                    $eventDataItem['time'] = $dateTime;
+                    $eventDataItem['data'] = $employeeEvent;
+                    $eventData[] = $eventDataItem;
+                    $rowId++;
+
+                }
+                $eventResponse['response']  = $eventData;
+                $eventResponse['status']    = 200;
 
             } else {
 
-                $data['status'] = 400;
+                $eventData['status']  = 400;
+                $eventData['data']  = array('status' =>$dataResponse->getStatusCode(),'data' =>'Error' );
             }
 
             /**
@@ -195,20 +214,19 @@ class Util
              * event = SAVE ( getting saved employees )
              */
             $newlyJoinedParamArray = array(
-                'fromDate' => date('Y-m-d', strtotime("+30 days")), // last 30 days
+                'fromDate' => date('Y-m-d', strtotime("-30 days")), // last 30 days
                 'toDate' => date('Y-m-d', strtotime("+1 days")),
                 'type' => 'employee',
                 'event' => 'SAVE'
 
             );
 
-
             $newlyJoinedParamUrl = $this->buildUrlParameters($newlyJoinedParamArray);
             $newlyJoined = 'employee/event?' . $newlyJoinedParamUrl;
             $newlyJoinedRequest = $this->createRequest($newlyJoined);
             $newlyJoinedResponse = $this->client->get($newlyJoinedRequest);
 
-            if ($newlyJoinedResponse->getStatusCode() == 200) {
+            if (!$newlyJoinedResponse->hasError()) {
 
                 $newlyJoinedResults['status'] = 200;
                 $newlyJoinedResults['response'] = $newlyJoinedResponse->getResult();
@@ -216,22 +234,11 @@ class Util
             } else {
 
                 $newlyJoinedResults['status'] = 400;
+                $newlyJoinedResults['response'] = 'error';
             }
 
-            $rowId = 0;
-            $dateTime = date("Y-m-d h:i:sa");
-
-            foreach ($data['data'] as $employeeEvent) {
-
-                $eventDataItem['id'] = $rowId;
-                $eventDataItem['time'] = $dateTime;
-                $eventDataItem['data'] = $employeeEvent;
-                $eventData[] = $eventDataItem;
-                $rowId++;
-
-            }
             $events['success'] = '1';
-            $events['data'] = $eventData;
+            $events['data'] = $eventResponse;
             $events['leaveRequests'] = $leaveResults;
             $events['onLeave'] = $leavesInToday;
             $events['newMembers'] = $newlyJoinedResults;
