@@ -80,6 +80,7 @@ class Util
             return json_encode($result);
 
         } catch (Exception $e) {
+            print($e->getMessage());
             $this->logError($e->getMessage());
             $result['success'] = 0;
             $result['msg'] = $e->getMessage();
@@ -95,10 +96,10 @@ class Util
      */
     function createEvents()
     {
-
         $currentDate = date("Y-m-d");
         $leaveData = null;
         $eventData = null;
+        $eventResponse = null;
 
         try {
 
@@ -115,10 +116,21 @@ class Util
                 'page' => 0,
                 'limit' => 20
             );
+
             $leaveRequestParams = $this->buildUrlParameters($leaveRequestParamArray);
-            $leaveRequestsUrl = 'leave/search?'.$leaveRequestParams;
+            $leaveRequestsUrl = 'leave/search?' . $leaveRequestParams;
             $leaveRequest = $this->createRequest($leaveRequestsUrl);
-            $leaveResults = $this->client->get($leaveRequest)->getResult();
+            $leaveRequestResponse = $this->client->get($leaveRequest);
+
+            if (!$leaveRequestResponse->hasError()) {
+
+                $leaveResults['status'] = $leaveRequestResponse->getStatusCode();
+                $leaveResults['response'] = $leaveRequestResponse->getResult();
+
+            } else {
+
+                $leaveResults['status'] = 400;
+            }
 
             /**
              * getting employees on leave for the day
@@ -127,7 +139,7 @@ class Util
              * taken:true
              * date : today
              */
-            $onLeaveUrlParamArray  = array(
+            $onLeaveUrlParamArray = array(
                 'reject' => 'false',
                 'cancelled' => 'false',
                 'pendingApproval' => 'false',
@@ -135,14 +147,25 @@ class Util
                 'taken' => 'false',
                 'page' => 0,
                 'limit' => 20,
-                'fromDate'=> $currentDate,
-                'toDate'  => $currentDate  // searching for the same day
+                'fromDate' => $currentDate,
+                'toDate' => $currentDate  // searching for the same day
 
             );
+
             $onLeaveTodayParams = $this->buildUrlParameters($onLeaveUrlParamArray);
-            $leavesUrl = 'leave/search?'.$onLeaveTodayParams;
+            $leavesUrl = 'leave/search?' . $onLeaveTodayParams;
             $leavesToday = $this->createRequest($leavesUrl);
-            $leavesInToday = $this->client->get($leavesToday)->getResult();
+            $leaveTodayResponse = $this->client->get($leavesToday);
+
+            if (!$leaveTodayResponse->hasError()) {
+
+                $leavesInToday['status'] = 200;
+                $leavesInToday['response'] = $leaveTodayResponse->getResult();
+
+            } else {
+
+                $leavesInToday['status'] = 400;
+            }
 
             /**
              * getting employee events
@@ -150,14 +173,39 @@ class Util
              * date from yesterday
              * to current date
              */
-            $employeeEventParamArray  = array(
+            $employeeEventParamArray = array(
                 'fromDate' => date('Y-m-d', strtotime("-1 days")),
                 'toDate' => date('Y-m-d', strtotime("+1 days"))
 
             );
-            $employeeEventUrl = 'employee/event?'.$this->buildUrlParameters($employeeEventParamArray);
+
+            $employeeEventUrl = 'employee/event?' . $this->buildUrlParameters($employeeEventParamArray);
             $eventRequest = $this->createRequest($employeeEventUrl);
-            $data = $this->client->get($eventRequest)->getResult();
+            $dataResponse = $this->client->get($eventRequest);
+
+            if (!$dataResponse->hasError()) {
+
+                $data = $dataResponse->getResult();
+                $rowId = 0;
+                $dateTime = date("Y-m-d h:i:sa");
+
+                foreach ($data['data'] as $employeeEvent) {
+
+                    $eventDataItem['id'] = $rowId;
+                    $eventDataItem['time'] = $dateTime;
+                    $eventDataItem['data'] = $employeeEvent;
+                    $eventData[] = $eventDataItem;
+                    $rowId++;
+
+                }
+                $eventResponse['response']  = $eventData;
+                $eventResponse['status']    = 200;
+
+            } else {
+
+                $eventData['status']  = 400;
+                $eventData['data']  = array('status' =>$dataResponse->getStatusCode(),'data' =>'Error' );
+            }
 
             /**
              * Get newly joined employees
@@ -165,33 +213,32 @@ class Util
              * parameters : date range for 30 days
              * event = SAVE ( getting saved employees )
              */
-            $newlyJoinedParamArray  = array(
+            $newlyJoinedParamArray = array(
                 'fromDate' => date('Y-m-d', strtotime("-30 days")), // last 30 days
                 'toDate' => date('Y-m-d', strtotime("+1 days")),
                 'type' => 'employee',
                 'event' => 'SAVE'
 
             );
+
             $newlyJoinedParamUrl = $this->buildUrlParameters($newlyJoinedParamArray);
-            $newlyJoined = 'employee/event?'.$newlyJoinedParamUrl;
+            $newlyJoined = 'employee/event?' . $newlyJoinedParamUrl;
             $newlyJoinedRequest = $this->createRequest($newlyJoined);
-            $newlyJoinedResults = $this->client->get($newlyJoinedRequest)->getResult();
+            $newlyJoinedResponse = $this->client->get($newlyJoinedRequest);
 
+            if (!$newlyJoinedResponse->hasError()) {
 
-            $rowId = 0;
-            $dateTime = date("Y-m-d h:i:sa");
+                $newlyJoinedResults['status'] = 200;
+                $newlyJoinedResults['response'] = $newlyJoinedResponse->getResult();
 
-            foreach ($data['data'] as $employeeEvent) {
+            } else {
 
-                $eventDataItem['id'] = $rowId;
-                $eventDataItem['time'] = $dateTime;
-                $eventDataItem['data'] = $employeeEvent;
-                $eventData[] = $eventDataItem;
-                $rowId++;
-
+                $newlyJoinedResults['status'] = 400;
+                $newlyJoinedResults['response'] = 'error';
             }
+
             $events['success'] = '1';
-            $events['data'] = $eventData;
+            $events['data'] = $eventResponse;
             $events['leaveRequests'] = $leaveResults;
             $events['onLeave'] = $leavesInToday;
             $events['newMembers'] = $newlyJoinedResults;
@@ -199,9 +246,9 @@ class Util
             return json_encode($events);
 
         } catch (Exception $e) {
-            $this->logError($e->getMessage());
+
             $events['success'] = '0';
-            $events['msg']     = $e->getMessage();
+            $events['msg'] = $e->getMessage();
             return json_encode($events);
 
         }
@@ -210,8 +257,7 @@ class Util
 
     function logError($msg)
     {
-        print($msg);
-        $_SESSION["errorMsg"]='$msg';
+        $_SESSION["errorMsg"] = '$msg';
     }
 
     /**

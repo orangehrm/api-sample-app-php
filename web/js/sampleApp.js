@@ -28,7 +28,6 @@ $(document).ready(
         getEmployeeEventData();
         setInterval(function () {
             refreshEvents();
-
         }, 60000);
 
     });
@@ -45,21 +44,18 @@ function getEmployeeEventData() {
         dataType: "json",
         success: function (data) {
 
-            if(data.success == 1){
-                eventItems = data.data.reverse();
-                if(data.data!= null ) {
-                    setNotifications(data.data.reverse());
+            if (data.success == 1) {
+
+                if (data.data.status == 200) {
+                    setNotifications(data.data.response.reverse());
                 }
-
                 updateData(data);
-                onLeavetoday = data.onLeave;
-                leaveRequests = data.leaveRequests;
-                newUsers = data.newMembers.data;
-            }else {
-                $.notify("Warning:"+ data.msg, "warn");
+                onLeavetoday = data.onLeave.response;
+                leaveRequests = data.leaveRequests.response;
+                newUsers = data.newMembers;
+            } else {
+                $.notify("Warning:" + data.msg, "warn");
             }
-
-
 
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -72,9 +68,7 @@ function getEmployeeEventData() {
  * Updating events
  */
 function refreshEvents() {
-
     getEmployeeEventData();
-
 }
 /**
  * Initiating employee notifications
@@ -85,9 +79,7 @@ function setNotifications(data) {
     var eventData = createNotificationItems(data);
     var template = $.templates("#employeeEvents");
     var htmlOutput = template.render(eventData);
-
     $("#notificationItemsContainer").html(htmlOutput);
-
 }
 
 /**
@@ -154,9 +146,9 @@ function getNotificationDetails(empId, type) {
         data: {id: empId, type: type, event: 'getEventData'},
         dataType: "json",
         success: function (data) {
-            if(data.success == 1){
+            if (data.success == 1) {
                 getAdditionalNotificationDetails(data, type);
-            }else {
+            } else {
                 window.alert(data.msg);
             }
 
@@ -208,12 +200,29 @@ function getAdditionalNotificationDetails(eventData, type) {
  */
 function updateData(data) {
 
-    var today = data.onLeave.data;
-    var total = data.leaveRequests.data;
-    $("#leaveToday").text(today.length);
-    $("#leaveRequests").text(total.length);
-    $("#empEvents").text(eventItems.length);
-    $("#newlyJoined").text(data.newMembers.data.length);
+    if (data.leaveRequests.status == 200) {
+        var total = data.leaveRequests.response.data;
+        $("#leaveRequests").text(total.length);
+    } else {
+        $("#leaveRequests").text(0);
+    }
+    if (data.onLeave.status == 200) {
+        var today = data.onLeave.response.data;
+        $("#leaveToday").text(today.length);
+    } else {
+        $("#leaveToday").text(0);
+    }
+    if (data.data.status == 200) {
+        $("#empEvents").text(data.data.response.length);
+    } else {
+        $("#empEvents").text(0);
+    }
+    if (data.newMembers.status == 200) {
+        $("#newlyJoined").text(data.newMembers.response.data.length);
+    } else {
+        $("#newlyJoined").text(0);
+    }
+
 
 }
 /**
@@ -221,20 +230,26 @@ function updateData(data) {
  */
 function showNewMembers() {
 
-    var template = $.templates("#newUsers");
-    var htmlOutput = template.render(newUsers);
+    if (newUsers.status == 200) {
 
-    $("#notificationItemsContainer").html(htmlOutput);
+        var template = $.templates("#newUsers");
+        var htmlOutput = template.render(newUsers.response.data);
+        $("#notificationItemsContainer").html(htmlOutput);
+    } else {
+
+    }
 }
 /**
  * show leave request notifications
  */
 function showLeaveRequests() {
 
-    var template = $.templates("#empLeaveRequests");
-    var htmlOutput = template.render(leaveRequests.data.reverse());
+    if ($("#leaveRequests").text() != 0) {
+        var template = $.templates("#empLeaveRequests");
+        var htmlOutput = template.render(leaveRequests.data.reverse());
+        $("#notificationItemsContainer").html(htmlOutput);
+    }
 
-    $("#notificationItemsContainer").html(htmlOutput);
 
 }
 /**
@@ -242,11 +257,12 @@ function showLeaveRequests() {
  */
 function showOnLeaveToday() {
 
-    var template = $.templates("#onLeave");
-    var htmlOutput = template.render(onLeavetoday.data);
+    if ($("#leaveToday").text() != 0) {
+        var template = $.templates("#onLeave");
+        var htmlOutput = template.render(onLeavetoday.data);
 
-    $("#notificationItemsContainer").html(htmlOutput);
-
+        $("#notificationItemsContainer").html(htmlOutput);
+    }
 }
 
 /**
