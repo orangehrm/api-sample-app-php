@@ -48,6 +48,7 @@ function getEmployeeEventData() {
 
                 if (data.data.status == 200) {
                     setNotifications(data.data.response.reverse());
+                    eventItems = data.data.response.reverse();
                 }
                 updateData(data);
                 onLeavetoday = data.onLeave.response;
@@ -130,6 +131,7 @@ function getNotificationMessage(dataItem) {
 
 
 function goBack() {
+    console.log(eventItems);
     setNotifications(eventItems);
 }
 /**
