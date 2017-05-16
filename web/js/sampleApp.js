@@ -46,7 +46,7 @@ function getEmployeeEventData() {
 
             if (data.success == 1) {
 
-                if (data.data.status == 200) {
+                if (data.data != null && data.data.status == 200) {
                     setNotifications(data.data.response.reverse());
                     eventItems = data.data.response.reverse();
                 }
@@ -214,7 +214,7 @@ function updateData(data) {
     } else {
         $("#leaveToday").text(0);
     }
-    if (data.data.status == 200) {
+    if (data.data != null && data.data.status == 200) {
         $("#empEvents").text(data.data.response.length);
     } else {
         $("#empEvents").text(0);
