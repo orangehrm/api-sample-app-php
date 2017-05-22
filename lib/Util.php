@@ -283,5 +283,45 @@ class Util
 
     }
 
+    /**
+     * Validate user
+     *
+     * @param $username
+     * @param $password
+     * @return string
+     */
+    function validateUser($username, $password)
+    {
 
+        $response = null;
+        try{
+           $loginUrl = "login";
+           $request = $this->createRequest($loginUrl);
+            $request->setParams(
+                [
+                    'username' =>  $username,
+                    'password' =>  $password
+                                   ]
+                 );
+
+            $result = $this->client->post($request);
+            $response = $result->getResult();
+
+            if (!$result->hasError()) {
+
+                $result['status'] = 400;
+
+            }
+
+            return$result;
+
+        } catch (Exception $e) {
+            print($e->getMessage());
+            $this->logError($e->getMessage());
+            $result['success'] = 0;
+            $result['msg'] = $e->getMessage();
+            return $result;
+        }
+
+    }
 }
