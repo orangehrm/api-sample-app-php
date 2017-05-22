@@ -309,18 +309,18 @@ class Util
 
             if (!$result->hasError()) {
 
-                $result['status'] = 400;
+                $response['status'] = 400;
 
             }
 
-            return$result;
+            return $response;
 
         } catch (Exception $e) {
             print($e->getMessage());
             $this->logError($e->getMessage());
-            $result['success'] = 0;
-            $result['msg'] = $e->getMessage();
-            return $result;
+            $response['success'] = 0;
+            $response['msg'] = $e->getMessage();
+            return $response;
         }
 
     }
