@@ -15,11 +15,11 @@ use Orangehrm\API\Client;
 
         $util->setClient($client);
         $response = $util->validateUser($username,$password);
-		
+
 		/* Check Username and Password existence in defined array */		
 		if ($response['login']){
 			/* Success: Set session variables and redirect to Protected page  */
-			$_SESSION['UserData']['Username']=$response['username'];
+			$_SESSION['UserData']['Username']= $username;
 			header("location:index.php");
 			exit;
 		} else {
