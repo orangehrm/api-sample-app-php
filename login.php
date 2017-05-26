@@ -37,7 +37,18 @@ use Orangehrm\API\Client;
 </head>
 <body>
 <div id="Frame0">
-  <h1>Notifications Dashboard Login</h1>
+
+
+    <table>
+        <tr>
+            <th>  <img src="orangeApp/orange/dist/img/orange.png" class="img-circle" alt="User Image"> </th>
+            <th>  <h1>Notifications Dashboard Login</h1></th>
+        </tr>
+
+    </table>
+
+
+
 
 </div>
 <br>
