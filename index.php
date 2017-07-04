@@ -27,7 +27,7 @@ if(!isset($_SESSION['UserData']['Username'])){
     <script src="web/js/sampleApp.js"></script>
     <script src="web/js/jsrender.js"></script>
     <script src="web/js/notify.js"></script>
-
+    <link rel="shortcut icon" href="orangeApp/orange/dist/img/favicon.ico">
     <!--
     JS render templates section
     these templates will be rendered from sampleApp.js
@@ -66,7 +66,7 @@ if(!isset($_SESSION['UserData']['Username'])){
 
     <div class="item" id="item_"{{:id}}> <img src="orangeApp/orange/dist/img/notification_icon.png" alt="user image" class="offline">
         <p class="message">
-            <a href="javascript:getNotificationDetails({{:id}},'{{:event}}')" class="name"> <small class="text-muted pull-right"><i class="fa fa-clock-o"></i>2017-05-03 10:14:18am</small> {{:name}} </a> {{:msg}} </p>
+            <a href="javascript:getNotificationDetails({{:id}},'{{:event}}')" class="name"> <small class="text-muted pull-right"><i class="fa fa-clock-o"></i>{{:time}}</small> {{:name}} </a> {{:msg}} </p>
     </div>
 </script>
 
@@ -114,7 +114,7 @@ if(!isset($_SESSION['UserData']['Username'])){
             <li>Job Title :{{:title}} </li>
              <li>Unit : {{:subunit}}</li>
             <li>Location :{{:location}} </li>
-             <li>Location :{{:category}} </li>
+             <li>Job Category :{{:category}} </li>
         </ul>
     </div>
 </div>
@@ -178,7 +178,7 @@ if(!isset($_SESSION['UserData']['Username'])){
                             <!-- Menu Footer-->
                             <li class="user-footer">
                                 <div class="pull-left">
-                                    <a href="#" ><?php echo $_SESSION['UserData']['Username'] ?></a>
+                                    <p><?php echo $_SESSION['UserData']['Username'] ?></p>
                                 </div>
                                 <div class="pull-right">
                                     <a href="logout.php" class="btn btn-default btn-flat">Sign out</a>
