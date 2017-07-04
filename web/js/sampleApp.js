@@ -96,33 +96,37 @@ function getNotificationMessage(dataItem) {
     var event = dataItem.event;
     var type = dataItem.type;
 
+
     msgString = msgString + employeeName + ' ';
 
     switch (type) {
         case 'employee':
 
             if ('UPDATE' == event) {
-                msgString = msgString + 'Updated Personal Details'
+                msgString = msgString + 'Updated Personal Details';
             } else if ('SAVE' == event) {
                 msgString = msgString + 'Joined';
             }
             break;
         case 'contact':
             if ('UPDATE' === event) {
-                msgString = msgString + 'Updated Contact Details'
+                msgString = msgString + 'Updated Contact Details';
             }
             break;
         case 'supervisor':
             if ('UPDATE' === event) {
-                msgString = msgString + 'Updated Supervisor Details'
+                msgString = msgString + 'Updated Supervisor Details';
             } else if ('SAVE' === event) {
-                msgString = msgString + 'Assigned a Supervisor'
+                msgString = msgString + 'Assigned a Supervisor';
             }
             break;
         case 'jobDetail':
             if ('UPDATE' === event) {
-                msgString = msgString + 'Updated Job Details'
+                msgString = msgString + 'Updated Job Details';
             }
+            break;
+        case 'dependent':
+            msgString = msgString + 'Dependent Details Changed';
             break;
     }
 
@@ -276,13 +280,13 @@ function createNotificationItems(data) {
 
     var eventsArray = [];
     for (var i in data) {
-
         eventsArray.push({
             id: data[i].data.employeeId,
             sortable: data[i].time,
             msg: getNotificationMessage(data[i].data),
             name: data[i].data.employeeName,
-            event: data[i].data.type
+            event: data[i].data.type,
+            time: data[i].time
         });
     }
 
